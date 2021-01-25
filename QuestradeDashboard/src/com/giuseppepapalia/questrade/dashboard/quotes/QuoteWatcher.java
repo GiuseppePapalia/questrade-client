@@ -6,6 +6,7 @@ import java.util.List;
 import javax.swing.JTextField;
 
 import com.giuseppepapalia.questrade.QuestradeClient;
+import com.giuseppepapalia.questrade.data.Option;
 import com.giuseppepapalia.questrade.data.Position;
 import com.giuseppepapalia.questrade.data.Quote;
 import com.giuseppepapalia.questrade.util.DollarValue;
@@ -46,8 +47,13 @@ public class QuoteWatcher extends Thread {
 					model.addRow(o);
 
 					Quote quote = client.getQuote(pos.getID());
+
 					model.setValueAt(new DollarValue(computeAvgPrice(quote)), i, 1);
-					model.setValueAt(new DollarValue((computeAvgPrice(quote) - pos.getAvgEntryPrice()) * 100 * pos.getOpenQuantity()), i, 2);
+					if (pos.getUnderlying() instanceof Option) {
+						model.setValueAt(new DollarValue((computeAvgPrice(quote) - pos.getAvgEntryPrice()) * 100 * pos.getOpenQuantity()), i, 2);
+					} else {
+						model.setValueAt(new DollarValue((computeAvgPrice(quote) - pos.getAvgEntryPrice()) * pos.getOpenQuantity()), i, 2);
+					}
 					model.setValueAt(new DollarValue(quote.getBidPrice()) + " / " + new DollarValue(quote.getAskPrice()), i, 3);
 					model.setValueAt(quote.getBidSize() + " / " + quote.getAskSize(), i, 4);
 					model.setValueAt(quote.getVolume(), i, 5);
@@ -58,7 +64,11 @@ public class QuoteWatcher extends Thread {
 					Position pos = (Position) model.getValueAt(i, 0);
 					Quote quote = client.getQuote(pos.getID());
 					model.setValueAt(new DollarValue(computeAvgPrice(quote)), i, 1);
-					model.setValueAt(new DollarValue((computeAvgPrice(quote) - pos.getAvgEntryPrice()) * 100 * pos.getOpenQuantity()), i, 2);
+					if (pos.getUnderlying() instanceof Option) {
+						model.setValueAt(new DollarValue((computeAvgPrice(quote) - pos.getAvgEntryPrice()) * 100 * pos.getOpenQuantity()), i, 2);
+					} else {
+						model.setValueAt(new DollarValue((computeAvgPrice(quote) - pos.getAvgEntryPrice()) * pos.getOpenQuantity()), i, 2);
+					}
 					model.setValueAt(new DollarValue(quote.getBidPrice()) + " / " + new DollarValue(quote.getAskPrice()), i, 3);
 					model.setValueAt(quote.getBidSize() + " / " + quote.getAskSize(), i, 4);
 					model.setValueAt(quote.getVolume(), i, 5);
